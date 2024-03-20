@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".InfoPemilihActivity"
+    android:orientation="vertical">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/white"
+        app:elevation="4dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:navigationIcon="@drawable/ic_back"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            android:background="@color/red" >
+
+            <TextView
+                android:id="@+id/tvToolbarWisata"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:fontFamily="@font/poppinsmedium"
+                android:textSize="16dp"
+                android:text="Informasi Pemilu"/>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/info"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pengertian Pemilu"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/poppinssemibold"
+                android:textSize="16dp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Pemilihan Umum, selanjutnya disingkat Pemilu, adalah sarana pelaksanaan kedaulatan rakyat yang diselenggarakan secara langsung, umum, bebas, rahasia, jujur, dan adil dalam Negara Kesatuan Republik Indonesia berdasarkan Pancasila dan Undang-Undang Dasar Negara Republik Indonesia Tahun 1945."
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Fungsi Pemilu"
+                android:layout_marginTop="16dp"
+                android:fontFamily="@font/poppinssemibold"
+                android:textSize="16dp"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="1. Pertama berfungsi untuk melaksanakan kedaulatan rakyat dengan memungkinkan warga negara secara langsung memilih wakil-wakil mereka di pemerintahan."
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="2. Selanjutnya, membentuk pemerintahan yang berlegitimasi karena memberikan legitimasi kepada pemerintahan yang terpilih secara demokratis."
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="3. Di sisi lain, pemilu memiliki peran penting dalam menentukan perwakilan rakyat dengan memungkinkan warga negara memilih wakil-wakil mereka di lembaga legislatif."
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="4. Selain itu, berperan dalam menguatkan demokrasi dengan memberikan kesempatan kepada rakyat untuk berpartisipasi dalam pemilihan pemimpin dan menentukan kebijakan negara."
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="5. Lebih lanjut,mendorong partisipasi politik warga negara dengan memberikan kesempatan bagi mereka untuk terlibat dalam proses politik dan meningkatkan kesadaran politik."
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/black"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="6. Terakhir,memfasilitasi pergantian kekuasaan yang damai dengan menyediakan jalur terorganisir untuk mengubah pemerintahan tanpa konflik atau kekerasan."
+                android:layout_marginTop="4dp"
+                android:fontFamily="@font/poppinsregular"
+                android:textColor="@color/black"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+</LinearLayout>

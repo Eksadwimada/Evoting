@@ -3,6 +3,8 @@ package com.example.evoting
 import android.Manifest
 import android.app.Activity
 import android.app.DatePickerDialog
+import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
@@ -25,7 +27,9 @@ import com.google.android.gms.maps.model.LatLng
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileInputStream
+import java.io.FileOutputStream
 import java.io.IOException
+import java.io.OutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -42,6 +46,7 @@ class EntryDataPemilihActivity : AppCompatActivity() {
     private val REQUEST_PERMISSION_CODE = 123
     private val REQUEST_IMAGE_FROM_GALLERY = 1001
     private val REQUEST_LOCATION = 1002
+    private val REQUEST_IMAGE_CAPTURE = 1003
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -66,7 +71,7 @@ class EntryDataPemilihActivity : AppCompatActivity() {
         binding.locationiEt.addTextChangedListener(textWatcher)
 
         // Menampilkan date picker saat tombol "Pick Date" ditekan
-        binding.btnDatePicker.setOnClickListener {
+        binding.tvSelectedDate.setOnClickListener {
             showDatePicker()
         }
 
@@ -79,6 +84,11 @@ class EntryDataPemilihActivity : AppCompatActivity() {
         // Meminta izin akses untuk memilih gambar saat tombol "Upload Photo" ditekan
         binding.btnUploadPhoto.setOnClickListener {
             checkAndRequestPermissions()
+        }
+
+        // Menangani klik pada tombol untuk mengambil gambar dari kamera
+        binding.btnGetPhoto.setOnClickListener {
+            takePictureFromCamera()
         }
 
         // Menyimpan data ke database saat tombol "Submit" ditekan
@@ -94,21 +104,26 @@ class EntryDataPemilihActivity : AppCompatActivity() {
         override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
         override fun afterTextChanged(s: Editable?) {
-            validateInputs()
+            val nik = binding.nikEt.text.toString()
+            val name = binding.nameEt.text.toString()
+            val noHp = binding.noEt.text.toString()
+            val tanggal = binding.tvSelectedDate.text.toString()
+
+            // Memvalidasi input pengguna
+            validateInputs(nik, name, noHp, tanggal)
         }
     }
 
     // Memvalidasi input pengguna
-    private fun validateInputs() {
-        val isNIKValid = binding.nikEt.text.toString().isNotEmpty()
-        val isNameValid = binding.nameEt.text.toString().isNotEmpty()
-        val isNoHpValid = binding.noEt.text.toString().isNotEmpty()
-        val isTanggalValid = binding.tvSelectedDate.text.toString().isNotEmpty()
+    private fun validateInputs(nik: String, name: String, noHp: String, tanggal: String) {
+        val isNIKValid = nik.isNotEmpty()
+        val isNameValid = name.isNotEmpty()
+        val isNoHpValid = noHp.isNotEmpty()
+        val isTanggalValid = tanggal.isNotEmpty()
 
         // Mengaktifkan atau menonaktifkan tombol "Submit" berdasarkan validitas input
         setButtonSubmitEnabled(isNIKValid && isNameValid && isNoHpValid && isTanggalValid)
     }
-
     // Mengatur status aktif/nonaktif tombol "Submit"
     private fun setButtonSubmitEnabled(isEnabled: Boolean) {
         binding.btnSubmit.isEnabled = isEnabled
@@ -122,12 +137,13 @@ class EntryDataPemilihActivity : AppCompatActivity() {
     // Menampilkan date picker
     private fun showDatePicker() {
         val datePickerDialog = DatePickerDialog(
-            this, { datePicker, year: Int, monthOfYear: Int, dayOfMonth: Int ->
+            this,
+            { _, year: Int, monthOfYear: Int, dayOfMonth: Int ->
                 val selectedDate = Calendar.getInstance()
                 selectedDate.set(year, monthOfYear, dayOfMonth)
                 val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
                 val formattedDate = dateFormat.format(selectedDate.time)
-                binding.tvSelectedDate.text = "$formattedDate"
+                binding.tvSelectedDate.setText(formattedDate)
             },
             calendar.get(Calendar.YEAR),
             calendar.get(Calendar.MONTH),
@@ -138,8 +154,20 @@ class EntryDataPemilihActivity : AppCompatActivity() {
 
     // Memeriksa dan meminta izin untuk mengakses penyimpanan
     private fun checkAndRequestPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), REQUEST_PERMISSION_CODE)
+        val permissionCamera = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+        val permissionStorage = ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        val listPermissionsNeeded = ArrayList<String>()
+
+        if (permissionCamera != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.CAMERA)
+        }
+
+        if (permissionStorage != PackageManager.PERMISSION_GRANTED) {
+            listPermissionsNeeded.add(Manifest.permission.READ_EXTERNAL_STORAGE)
+        }
+
+        if (listPermissionsNeeded.isNotEmpty()) {
+            ActivityCompat.requestPermissions(this, listPermissionsNeeded.toTypedArray(), REQUEST_PERMISSION_CODE)
         } else {
             pickImageFromGallery()
         }
@@ -167,10 +195,12 @@ class EntryDataPemilihActivity : AppCompatActivity() {
         startActivityForResult(intent, REQUEST_IMAGE_FROM_GALLERY)
     }
 
-    // Menampilkan gambar yang dipilih
-    private fun displayImage(bitmap: Bitmap?) {
-        bitmap?.let {
-            binding.imgView.setImageBitmap(it)
+    // Memilih gambar dari kamera
+    private fun takePictureFromCamera() {
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(packageManager)?.also {
+                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+            }
         }
     }
 
@@ -179,6 +209,14 @@ class EntryDataPemilihActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
             when (requestCode) {
+                // Menangani hasil pemilihan lokasi
+                REQUEST_LOCATION -> {
+                    if (data != null && data.hasExtra("selected_location")) {
+                        val selectedLocation = data.getParcelableExtra<LatLng>("selected_location")
+                        fetchAddress(selectedLocation)
+                    }
+                }
+                // Memilih gambar dari galeri
                 REQUEST_IMAGE_FROM_GALLERY -> {
                     data?.data?.let { uri ->
                         val filePath = getRealPathFromURI(uri)
@@ -187,12 +225,11 @@ class EntryDataPemilihActivity : AppCompatActivity() {
                         currentPhotoPath = filePath
                     }
                 }
-
-                REQUEST_LOCATION -> {
-                    if (data != null && data.hasExtra("selected_location")) {
-                        val selectedLocation = data.getParcelableExtra<LatLng>("selected_location")
-                        fetchAddress(selectedLocation)
-                    }
+                // Menangani hasil pengambilan gambar dari kamera
+                REQUEST_IMAGE_CAPTURE -> {
+                    val imageBitmap = data?.extras?.get("data") as Bitmap?
+                    displayImage(imageBitmap)
+                    currentPhotoPath = saveImageToInternalStorage(imageBitmap)
                 }
             }
         }
@@ -230,6 +267,34 @@ class EntryDataPemilihActivity : AppCompatActivity() {
             cursor.close()
         }
         return result
+    }
+
+    // Menampilkan gambar yang dipilih
+    private fun displayImage(bitmap: Bitmap?) {
+        bitmap?.let {
+            binding.imgView.setImageBitmap(it)
+        }
+    }
+
+    // Menyimpan gambar ke penyimpanan internal
+    private fun saveImageToInternalStorage(bitmap: Bitmap?): String {
+        bitmap?.let {
+            val cw = ContextWrapper(applicationContext)
+            val directory = cw.getDir("imageDir", Context.MODE_PRIVATE)
+            val timeStamp = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val fileName = "IMG_$timeStamp.jpg"
+            val file = File(directory, fileName)
+            try {
+                val stream: OutputStream = FileOutputStream(file)
+                it.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                stream.flush()
+                stream.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return file.absolutePath
+        }
+        return ""
     }
 
     // Menyimpan data ke database
@@ -340,7 +405,7 @@ class EntryDataPemilihActivity : AppCompatActivity() {
         binding.noEt.text?.clear()
         binding.rbMale.isChecked = false
         binding.rbFemale.isChecked = false
-        binding.tvSelectedDate.text = ""
+        binding.tvSelectedDate.text = Editable.Factory.getInstance().newEditable("")
         binding.locationiEt.text?.clear()
         binding.imgView.setImageDrawable(null)
         currentPhotoPath = null

@@ -177,33 +177,26 @@
                 android:layout_marginTop="12dp"
                 android:layout_marginBottom="6dp"/>
 
-            <LinearLayout
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/dateLayout"
+                style="@style/LoginTextInputOuterFieldStyle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                app:boxStrokeColor="@color/red"
+                app:hintTextColor="@color/red">
 
-                <TextView
+                <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/tvSelectedDate"
-                    android:layout_width="200dp"
+                    style="@style/LoginTextInputInnerFieldStyle"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:padding="12dp"
-                    android:textSize="16sp"
-                    android:hint="Tanggal"
-                    android:fontFamily="@font/poppinsregular"
-                    android:background="@drawable/bg_text"
-                    android:paddingStart="20dp"/>
+                    android:drawablePadding="12dp"
+                    android:hint="Masukkan tanggal"
+                    android:inputType="text"
+                    android:drawableTint="@color/red"
+                    android:drawableEnd="@drawable/ic_date"/>
 
-                <ImageButton
-                    android:id="@+id/btnDatePicker"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_centerInParent="true"
-                    android:src="@drawable/ic_date"
-                    android:background="@drawable/btnprimary"
-                    android:layout_marginStart="12dp"/>
-
-            </LinearLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
                 android:layout_width="wrap_content"
@@ -261,22 +254,33 @@
 
             <Button
                 android:id="@+id/btnUploadPhoto"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Unggah Foto"
-                android:textSize="16dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:fontFamily="@font/poppinsregular"
                 android:background="@drawable/btnprimary"
-                android:layout_marginTop="8dp"/>
+                android:layout_marginTop="8dp"
+                android:drawableLeft="@drawable/ic_upload" />
+
+            <Button
+                android:id="@+id/btnGetPhoto"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Ambil Foto"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp"
+                android:fontFamily="@font/poppinsregular"
+                android:background="@drawable/btnprimary"
+                android:layout_marginTop="8dp"
+                android:drawableLeft="@drawable/ic_camera" />
 
             <Button
                 android:id="@+id/btnSubmit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Submit"
-                android:textSize="16dp"
                 android:paddingTop="8dp"
                 android:paddingBottom="8dp"
                 android:fontFamily="@font/poppinsregular"

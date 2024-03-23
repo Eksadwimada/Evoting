@@ -116,10 +116,24 @@ class EntryDataPemilihActivity : AppCompatActivity() {
 
     // Memvalidasi input pengguna
     private fun validateInputs(nik: String, name: String, noHp: String, tanggal: String) {
-        val isNIKValid = nik.isNotEmpty()
+        val isNIKValid = nik.length == 16
         val isNameValid = name.isNotEmpty()
-        val isNoHpValid = noHp.isNotEmpty()
+        val isNoHpValid = noHp.matches(Regex("^\\+62\\d{9,}$"))
         val isTanggalValid = tanggal.isNotEmpty()
+
+        // Menampilkan pesan kesalahan jika NIK tidak valid
+        if (!isNIKValid) {
+            binding.nikLayout.error = "NIK harus terdiri dari 16 digit"
+        } else {
+            binding.nikLayout.error = null // Menghapus pesan kesalahan jika NIK valid
+        }
+
+        // Menampilkan pesan kesalahan jika nomor telepon tidak valid
+        if (!isNoHpValid) {
+            binding.noLayout.error = "Nomor telepon harus dimulai dengan +62"
+        } else {
+            binding.noLayout.error = null // Menghapus pesan kesalahan jika nomor telepon valid
+        }
 
         // Mengaktifkan atau menonaktifkan tombol "Submit" berdasarkan validitas input
         setButtonSubmitEnabled(isNIKValid && isNameValid && isNoHpValid && isTanggalValid)
